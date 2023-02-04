@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     algorithm: str 
     acces_token_expire_minutes: int 
 
-    #we are pydantic to collect the necesary data from .env file 
+    #we use pydantic to collect the necesary data from .env file 
     #for our schema and validated it 
     class Config:
         env_file = ".env"
