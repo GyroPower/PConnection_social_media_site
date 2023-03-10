@@ -6,7 +6,7 @@ from typing import Optional
 class User_base(BaseModel):
     email: EmailStr
     password: str
-    phone_number:str
+    #phone_number:str
 
 
 class User_response(BaseModel):
