@@ -1,0 +1,13 @@
+[Unit] 
+Description=fist developed and deployed api with FastAPI
+After=network.target 
+
+[Service]
+User=julian
+Group=julian 
+WorkingDirectory=/home/julian/app/src/
+Environment="PATH=home/julian/app/venv/bin"
+ExecStart=home/julian/app/venv/bin/gunicorn -w 2 -k uvicorn.workers.UvicornWorker apps.main:app --bind 0.0.0.0:8000
+
+[Install]
+WantedBy=multi-user.target
