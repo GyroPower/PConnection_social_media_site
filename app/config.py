@@ -18,4 +18,4 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-#print(settings.database_username)
+print(settings.database_name)
