@@ -8,7 +8,7 @@ services:
     #build: ., this is saying we gonna build a container with a docker file we settup 
     #an own build image
     image: julianpower/fastapi-api  
-    #depends on tells to the script to start first the build ol the service called postgres
+    #depends on tells to the script to start first the build of the service called postgres
     depends_on:
       - postgres
     
