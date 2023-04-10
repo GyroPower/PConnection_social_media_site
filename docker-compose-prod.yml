@@ -1,0 +1,47 @@
+version: "3"
+#version is the version using docker-compose
+#a service is a container, each service is a container and we sett what dependecies should
+#have and with which image build it
+services: 
+  #api is the name of the service
+  api:
+    #build: ., this is saying we gonna build a container with a docker file we settup 
+    #an own build image
+    image: julianpower/fastapi-api  
+    #depends on tells to the script to start first the build ol the service called postgres
+    depends_on:
+      - postgres
+    
+    #this is the port which are connected the container with the machine  which is containing 
+    #the container
+    ports: 
+      - 80:8000
+    #telling to use the .env file that is used in the app
+    environment:
+      - DATABASE_HOSTNAME=${DATABASE_HOSTNAME}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCES_TOKEN_EXPIRE_MINUTES=${ACCES_TOKEN_EXPIRE_MINUTES}        
+    #this volumes make to our code be bing with the code on the container to change 
+    #every time it change in our local machine
+    #volumes:
+    #  - ./:/usr/src/app:ro
+    #run this commad everytime we change something in the code
+    #command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload 
+    
+    
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+    
+volumes:
+  postgres-db:
