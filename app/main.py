@@ -45,7 +45,7 @@ app.include_router(auth.router)
 @app.get("/")
 def hi():
 
-    return {"message":"hellow world!!!!"}
+    return {"message":"hellow world outside of ubuntu"}
 
 
 
