@@ -21,11 +21,11 @@ db:Session = Depends(get_db),limit:int = 10,skip:int =0,title:Optional[str] = ''
 
 
 @router.get("/{id}",response_model=schemas.Post_response)
-async def gets_post(id:int,db : Session=Depends(get_db)):
+async def gets_post(id:int,db : Session=Depends(get_db),current_user:int = Depends(oauth2.get_current_user),title:Optional[str]=""):
     
     #cursor.execute("""SELECT * FROM posts where id=(%s)""",(str(id)))
     #post = cursor.fetchone()
-    post = db.query(models.Post).filter(models.Post.id==id).first()
+    post = db.query(models.Post).filter(models.Post.id==id).filter(models.Post.title.contains(title)).first()
     #with filter we pass the field what we want to filter and with first we say we want the 
     # firts one who have the same coincidence 
     
@@ -44,10 +44,11 @@ async def gets_post(id:int,db : Session=Depends(get_db)):
         
     
 @router.get("/",response_model=List[schemas.Post_response])
-async def gets_posts(db: Session = Depends(get_db),limit:int = 10,skip:int =0,
+async def gets_posts(db: Session = Depends(get_db),current_user:int=Depends(oauth2.get_current_user),limit:int = 10,skip:int =0,
 title:Optional[str] = ''):
     """cursor.execute('''SELECT * FROM posts''')
     posts=cursor.fetchall()"""
+
     posts =  db.query(models.Post).filter(models.Post.published==True).filter(models.Post.title.contains(title)).offset(skip).limit(limit).all()
     
     
@@ -79,7 +80,7 @@ current_user: int = Depends(oauth2.get_current_user)):
 
 
 @router.delete("/{id}",status_code=status.HTTP_204_NO_CONTENT)
-def delte(id:int, db : Session = Depends(get_db),
+def delete(id:int, db : Session = Depends(get_db),
 current_user: int = Depends(oauth2.get_current_user)):
     
     #cursor.execute("""DELETE FROM posts where id = %s""",(str(id)))
@@ -112,12 +113,12 @@ current_user: int = Depends(oauth2.get_current_user)):
     #conn.commit()
     post_query = db.query(models.Post).filter(models.Post.id == id)
     post = post_query.first()
-
+    print(post.id,post.title)
     if not post: 
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
         detail=f"Post with id: {id} not found")
     if post.owner_id != current_user.id:
-        return HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
         detail=f"Unauthorized,this post don't belong to te current user")
 
     post_query.update(update_post.dict(),synchronize_session=False)

@@ -31,6 +31,7 @@ class Post_response(Post_Base):
     owner_id:int
     id: int
     owner: User_response
+    votes: int
     class Config:
         orm_mode = True
     
@@ -43,6 +44,9 @@ class Token(BaseModel):
 class Token_data(BaseModel):
     id: Optional[str] = None
 
+class Vote(BaseModel):
+    post_id : int
+     
     
 
     

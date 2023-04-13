@@ -7,39 +7,29 @@ router = APIRouter(
     tags= ["votes"]
 )
 
-@router.post("/")
-def votes(vote:schemas.vote,current_user:int = Depends(oauth2.get_current_user),
+@router.post("/{id}")
+def do_vote(id:int,current_user:int = Depends(oauth2.get_current_user),
 db:Session=Depends(database.get_db)):
-    post = db.query(models.Post).filter(models.Post.id == vote.post_id).first()
+    post = db.query(models.Post).filter(models.Post.id == id).first()
     
     if not post:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Post with id {vote.post_id} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Post with id {id} not found")
 
-    vote_query = db.query(models.Vote).filter(models.Vote.post_id == vote.post_id,models.Vote.user_id == current_user.id)
+    vote_query = db.query(models.Vote).filter(models.Vote.post_id == id,models.Vote.user_id == current_user.id)
     regist = vote_query.first()
 
-    print(current_user.id)
-    if vote.liked == 1:
-        if not regist:
-            
-            data = models.Vote(user_id = current_user.id,post_id=vote.post_id)
-
-            db.add(data)
-            db.commit() 
-            db.refresh(data)
-        
-            return {"message":"Successfully added vote"}
-        else:
-            raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED,detail=f"Alredy liked this post")
-
-
-    elif vote.liked == 0:
-
-
-        if not regist:
-            raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED,detail=f"Alredy unliked post")
-
-        vote_query.delete(synchronize_session=False)
+    if not regist:
+        data = models.Vote(user_id = current_user.id,post_id=post.id)
+        db.add(data)
         db.commit()
-
-        return {"message":"Successfully deleted vote"}
+        post.votes +=1
+        db.add(post)
+        db.commit()
+        return {"msg":"Liked"}
+    else:
+        post.votes -=1
+        db.add(post)
+        db.commit()
+        vote_query.delete()
+        db.commit()
+        return {"msg":"Unliked"}

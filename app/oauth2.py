@@ -32,9 +32,9 @@ def verify_acces_token(token:str, credentials_exception):
     try:
         #decode expects a list of algorithms
         payload = jwt.decode(token, SECRET_KEY,algorithms=[ALGORITHM])
-
+        
         id :str = payload.get("user_id")
-
+        
         #make sure there is a id 
         if id is None:
             raise credentials_exception
