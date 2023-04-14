@@ -1,4 +1,4 @@
-name: Buld and deply code
+name: Build and deply code
 
 on: [push, pull_request]
 
