@@ -2,10 +2,12 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.main import app 
-from app.config import settings
-from app.database import get_db,Base 
-from app.oauth2 import create_acces_toke
-from app import models
+from app.core.config import settings
+from app.db.database import get_db,Base 
+from app.core.oauth2 import create_acces_toke
+from app.db.models.users import User
+from app.db.models.post import Post
+from app.db.models.vote import Vote
 import pytest   
 
 # a hint is just stop the tests when a fail test occurs, when our code grows a lot
@@ -103,13 +105,13 @@ def create_posts(test_user,session,test_user2):
     ]
     
     def create_model_posts(post):
-        return models.Post(**post)
+        return Post(**post)
     
     post_map= map(create_model_posts,post_data)
     posts = list(post_map)
     session.add_all(posts)
     session.commit()
-    return session.query(models.Post).all()
+    return session.query(Post).all()
 
 @pytest.fixture
 def test_user2(client):
@@ -130,14 +132,14 @@ def like_posts(session,create_posts,test_user,test_user2):
             {"user_id":test_user['id'],"post_id":create_posts[2].id},]
     
     def create_model_votes(vote):
-        post = session.query(models.Post).filter(models.Post.id == vote['post_id']).first()
+        post = session.query(Post).filter(Post.id == vote['post_id']).first()
         post.votes +=1
         session.add(post)
         session.commit()
-        return models.Vote(**vote)
+        return Vote(**vote)
 
     vote_map = map(create_model_votes,data)
     votes = list(vote_map)
     session.add_all(votes)
     session.commit()
-    return session.query(models.Vote).all()
+    return session.query(Vote).all()

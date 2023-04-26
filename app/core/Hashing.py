@@ -10,5 +10,5 @@ def password_hash(password:str):
 #with this function we will verify if the password from the client it's equals to the one 
 #related with the email to givin acces to the content related with the user registered in the 
 #database
-def verify(password:str,hashed_password):
+def verify_password(password:str,hashed_password):
     return pwd_context.verify(password,hashed_password)

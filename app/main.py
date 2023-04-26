@@ -1,11 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from . import models
-from .database import engine
-from .routers import posts,users,auth,votes
-from pydantic import BaseSettings
-from .config import settings
-
+from app.routers.base import api_route as api 
+from app.web_apps.base import api_router
 #we need RealDictCursor just to give us the name of the columns when we make a sql query
 #without it that just give us the values but not the columns where that belong 
 #this class make what we recived in a python dictionary wit key-value pair
@@ -37,17 +33,8 @@ app.add_middleware(
     allow_methods = ["*"],
     allow_headers = ["*"]
 )
-
-app.include_router(posts.router)
-app.include_router(users.router)
-app.include_router(auth.router)
-app.include_router(votes.router)
-
-@app.get("/")
-def hi():
-
-    return {"message":"hellow world outside of ubuntu"}
-
+app.include_router(api)
+app.include_router(api_router)
 
 
 #this function what makes it's to get a session to our database, and the session
