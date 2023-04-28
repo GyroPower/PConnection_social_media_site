@@ -1,9 +1,24 @@
 {% extends 'shared/base.html' %}
+
+{% block title %}
+  <title>P-connection</title>
+{% endblock %}
+
 {% block content%}
 <div class="container">
   <div class="row">
+    {% if msg %}
+      <div class="col">{{msg}}</div>
+    {% else %}
+      <div class="col">
+        <a href="/login/" class="btn btn-primary">Login</a>
+      </div>
+    {% endif %}
+  </div>
+    <div class="row">
     {%for post in posts %}
-      <div class="col-xxl">{{post.title}}</div>
+      <div class="col-xxl">{{post.content}}</div>
+      <div class='col-xxl'>{{post.media}}</div>
     {% endfor %}
   </div>
 </div>

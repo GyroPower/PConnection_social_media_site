@@ -7,7 +7,7 @@
 {% block content %}
     <div class="container">
         <div class='row'>
-            <h5 class="display-5">Sign up</h5>
+            <h5 class="display-5">Login</h5>
             <div class="text-danger font-weight-bold">
                 {% for error in errors %}
                     <li>{{error}}</li>
@@ -18,14 +18,13 @@
 
       <div>
         <form method="post">
-            <div class="mb-3">
+            <div>
+                <label>Email</label>
                 <input type="text" required placeholder="Your email" name="email" value="{{email}}" class='form-control'>
             </div>
-            <div class="mb-3">
-                <input type="password" required placeholder="Password" name="password" value="{{password}}" class='form-control'>
-            </div>
-            <div class="mb-3">
-                <input type="password" required placeholder="Repeat password" name="r_password" value="{{r_password}}" class='form-control'>
+            <div>
+                <label>Password</label>
+                <input type="password" name="password" value="{{password}}" class='form-control'>
             </div>
             <button type="submit">submit</button>
         </form>
