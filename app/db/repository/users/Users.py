@@ -1,11 +1,14 @@
 from typing import Optional
 
+from fastapi import Request
 from sqlalchemy.orm import Session
 
 from app.core.Hashing import password_hash
+from app.core.oauth2 import get_current_user_by_token
 from app.db.models.users import User
 from app.db.repository.utils import random_username
 from app.schemas.Users import User_base
+from app.schemas.Users import User_change_email
 from app.schemas.Users import User_response
 
 
@@ -36,3 +39,26 @@ def get_users(username: str, db: Session):
 def get_user_id(id: int, db: Session):
 
     return db.query(User).filter(User.id == id).first()
+
+
+def r_update_user(id: int, updated_info: User_response, db: Session):
+    user = db.query(User).filter(User.id == id)
+
+    user.update(updated_info.dict(), synchronize_session=False)
+    db.commit()
+    return user.first()
+
+
+def get_current_user(request: Request, db: Session):
+
+    token = request.cookies.get("access_token")
+
+    return get_current_user_by_token(token=token, db=db)
+
+
+def r_update_email(id: int, updated_email: User_change_email, db: Session):
+
+    user = db.query(User).filter(User.id == id)
+    user.update(updated_email.dict())
+    db.commit()
+    return user.first()

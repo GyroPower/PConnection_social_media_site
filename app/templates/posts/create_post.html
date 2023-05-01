@@ -1,1 +1,24 @@
 {% extends 'shared/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row-my-3">
+        <h5 class="display-5">Create Post</h5>
+        <div class="text-danger font-weight-bold"></div>
+    </div>
+
+
+    <div class="row-my-5">
+        <form method="post">
+            <div class="mb-3">
+                <label for="exapleFormControlTextarea1" class="form-label">Description</label>
+                <textarea class="form-control" required name="content" id="exampleFormControlTextarea1" rows="3">{{description}}</textarea>
+            </div>
+            <div clas="mb-3">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <a href="/" class="btn btn-danger">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

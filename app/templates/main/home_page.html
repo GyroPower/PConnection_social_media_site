@@ -5,21 +5,42 @@
 {% endblock %}
 
 {% block content%}
-<div class="container">
-  <div class="row">
-    {% if msg %}
-      <div class="col">{{msg}}</div>
+
+<div class="container-fluid">
+  <div class="row my-2">
+    {% if user %}
+      <div class="col-sm-4 mb-1">
+        <a href="/user-info/{{user.id}}" class="text-uppercase btn btn-primary">{{user.username}}</a>
+
+      </div>
     {% else %}
-      <div class="col">
-        <a href="/login/" class="btn btn-primary">Login</a>
+      <div class="col-sm-4 mb-1">
+        <a href="/login/" class="btn btn-primary text-center">Login</a>
       </div>
     {% endif %}
+    <div class="row ">
+      <div class="col">
+        <a href="/create-post" class="btn btn-primary">Post +</a>
+      </div>
+    </div>
+
   </div>
+</div>
+
+<div class="container">
+  {%for post in posts %}
+    <div class="row" >
+      <div class="col-sm-3"></div>
+      <div class="col-sm-6 card shadow bg-body rounded">
+        <p>{{post.content}}</p>
+      </div>
+      <div class="col-sm-3"></div>
+    </div>
     <div class="row">
-    {%for post in posts %}
-      <div class="col-xxl">{{post.content}}</div>
-      <div class='col-xxl'>{{post.media}}</div>
+      <div class="col-sm-3"></div>
+      <div class='col-sm-6 card shadow bg-body rounded text-center'>{{post.media}}</div>
+      <div class="col-sm-3"></div>
+    </div>
     {% endfor %}
-  </div>
 </div>
 {%endblock%}

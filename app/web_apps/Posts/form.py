@@ -16,6 +16,6 @@ class post_form:
         self.media = form.get("media")
 
     async def validate_data(self):
-        if self.content and self.media == "":
+        if self.content == "" and self.media == "":
             return False
         return True
