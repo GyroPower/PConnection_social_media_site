@@ -25,3 +25,4 @@ class User(Base):
         TIMESTAMP(timezone=True), nullable=False, server_default=text("NOW()")
     )
     description = Column(String, nullable=True, default="")
+    post = relationship("Post",back_populates="owner")

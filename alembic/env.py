@@ -3,7 +3,7 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from app.db.base import Base 
-from app.core.config import settings
+from app.core.config import settings_core
 from alembic import context
 
 # this is the Alembic Config object, which provides
@@ -11,7 +11,7 @@ from alembic import context
 config = context.config
 config.set_main_option(
     "sqlalchemy.url",
-    f'postgresql+psycopg2://{settings.database_username}:{settings.database_password}@{settings.database_hostname}:{settings.database_port}/{settings.database_name}'
+    f'postgresql+psycopg2://{settings_core.database_username}:{settings_core.database_password}@{settings_core.database_hostname}:{settings_core.database_port}/{settings_core.database_name}'
 )
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

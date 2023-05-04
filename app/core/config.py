@@ -10,12 +10,11 @@ class Settings(BaseSettings):
     secret_key: str 
     algorithm: str 
     acces_token_expire_minutes: int 
+    dir_media:str
 
     #we use pydantic to collect the necesary data from .env file 
     #for our schema and validated it 
     class Config:
         env_file = ".env"
 
-settings = Settings()
-
-print(settings.database_name)
+settings_core = Settings()

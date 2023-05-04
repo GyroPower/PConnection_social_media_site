@@ -56,6 +56,35 @@
             </div>
         </div>
     </div>
+    {%for post in posts %}
+    <div class="row">
+      <div class="col-sm-3"></div>
+      <div class="col-sm-6 card shadow bg-body rounded ">
+        <a href="/user-info/{{user.id}}">{{user.username}}</a>
+      </div>
+      <div class="col-sm-3"></div>
+    </div>
+    <div class="row " >
+      <div class="col-sm-3"></div>
+      <div class="col-sm-6 card shadow bg-body rounded ">
+        {% if not content == ""%}
+          <p>{{post.content}}</p>
+        {% endif %}
+      </div>
+      <div class="col-sm-3"></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3"></div>
+      <div class='col-sm-6 card shadow bg-body rounded text-center mb-3'>
+        {% if post.media %}
+          <img src="data:;base64,{{post.media}}"> 
+        {% endif %}
+        </div>
+      <div class="col-sm-3"></div>
+    </div>
+    {% endfor %}
+</div>
+
 </div>
 
 {% endblock %}

@@ -1,4 +1,6 @@
+import base64
 import json
+import os
 
 from fastapi import APIRouter
 from fastapi import Depends
@@ -24,6 +26,8 @@ from app.schemas.Users import User_response
 from app.web_apps.Users.form import change_email
 from app.web_apps.Users.form import create_user_form
 from app.web_apps.Users.form import update_user
+from app.core.config import settings_core
+from app.db.repository.posts.Posts import get_posts_own_by_user
 
 router = APIRouter(include_in_schema=False)
 
@@ -56,6 +60,10 @@ async def sigup(request: Request, db: Session = Depends(get_db)):
 
             user_created = create_user(user, db)
 
+            directory = f"{user_created.id}" 
+            path = os.path.join(settings_core.dir_media+"media/",directory)
+            os.mkdir(path)
+            
             response = responses.RedirectResponse(
                 "/?msg=Login-Success", status_code=status.HTTP_302_FOUND
             )
@@ -77,9 +85,16 @@ def user_info(request: Request, db: Session = Depends(get_db), id: int = None):
     try:
         current_user = get_current_user(request, db)
         user: User_response = get_user_id(id=id, db=db)
+        posts = get_posts_own_by_user(db,id)
+        
+        for post in posts:
+            if post.media:
+                media = base64.b64encode(post.media)
+                post.media = media.decode()
+        
         return templates.TemplateResponse(
             name="users/user_info.html",
-            context={"request": request, "user": user, "current_user": current_user.id},
+            context={"request": request, "user": user, "current_user": current_user.id,"posts":posts},
         )
     except HTTPException:
         return responses.RedirectResponse("/login/", status_code=status.HTTP_302_FOUND)
