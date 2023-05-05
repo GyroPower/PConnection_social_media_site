@@ -5,6 +5,16 @@
 {% endblock %}
 
 {% block content%}
+<script>
+  function like(id){
+    fetch("/votes/"+id,{
+        method:"POST"
+    ,})
+    .then(response=>response.json())
+    .then(document.getElementById(id).innerHTML ="")
+    .then(data => document.getElementById(id).innerHTML = data.vote)
+}
+</script>
 
 <div class="container-fluid">
   <div class="row my-2">
@@ -47,13 +57,24 @@
     </div>
     <div class="row">
       <div class="col-sm-3"></div>
-      <div class='col-sm-6 card shadow bg-body rounded text-center mb-3'>
+        <div class='col-sm-6 card shadow bg-body rounded text-center'>
         {% if post.media %}
-          <img src="data:;base64,{{post.media}}"> 
+          <img src="data:;base64,{{post.media}}">
         {% endif %}
         </div>
       <div class="col-sm-3"></div>
     </div>
+    <div class="row " >
+      <div class="col-sm-3"></div>
+      <div class="col-sm-3 card shadow bg-body rounded mb-3">
+        <p id="{{post.id}}">{{post.votes}}</p>
+      </div>
+      <div class="col-sm-3 card shadow bg-body rounded mb-3">
+        <button class="btn btn-primary bth-sm" onclick="like({{post.id}})">like</button>
+      </div>
+      <div class="col-sm-3"></div>
+    </div>
+
     {% endfor %}
 </div>
 {%endblock%}

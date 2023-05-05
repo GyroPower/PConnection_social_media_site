@@ -7,14 +7,20 @@ from app.schemas.Posts import Post_Base
 
 def get_posts_with_more_interaction(db: Session):
 
-    post = db.query(Post).join(User,Post.owner_id==User.id)
+    post = (
+        db.query(Post)
+        .join(User, Post.owner_id == User.id)
+        .order_by(Post.create_at.asc())
+    )
 
     return post
 
 
 def create_post(post, db: Session, user_id: int):
 
-    post_create = Post(content=post["content"],media=post["media_dir"], owner_id=user_id)
+    post_create = Post(
+        content=post["content"], media=post["media_dir"], owner_id=user_id
+    )
 
     db.add(post_create)
     db.commit()
@@ -22,5 +28,6 @@ def create_post(post, db: Session, user_id: int):
 
     return post
 
-def get_posts_own_by_user(db:Session,owner_id):
+
+def get_posts_own_by_user(db: Session, owner_id):
     return db.query(Post).filter(Post.owner_id == owner_id)
