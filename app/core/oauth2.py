@@ -40,7 +40,7 @@ def create_acces_toke(data: dict):
 
 # verify if the token given is authorized and the user can acces to the data related of
 # the id given in the token
-def verify_acces_token(token: str, credentials_exception):
+def verify_access_token(token: str, credentials_exception):
     try:
         # decode expects a list of algorithms
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -69,7 +69,7 @@ def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-    token = verify_acces_token(token, credenrials_exceptions)
+    token = verify_access_token(token, credenrials_exceptions)
     user = db.query(User).filter(User.id == token.id).first()
 
     return user
@@ -87,8 +87,10 @@ def get_current_user_by_token(token: str, db: Session):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not authenticate"
         )
-    user_id = verify_acces_token(
+    user_id = verify_access_token(
         token=param, credentials_exception=credenrials_exceptions
     )
 
-    return db.query(User).filter(User.id == user_id.id).first()
+    user = db.query(User).filter(User.id == user_id.id).first()
+    
+    return user

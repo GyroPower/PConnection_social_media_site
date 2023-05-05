@@ -37,3 +37,6 @@ class User_verify(BaseModel):
 
 class User_change_email(BaseModel):
     email: EmailStr
+
+class User_change_password(BaseModel):
+    password: str 
