@@ -9,8 +9,8 @@ from app.db.models.users import User
 from app.db.repository.utils import random_username
 from app.schemas.Users import User_base
 from app.schemas.Users import User_change_email
-from app.schemas.Users import User_response
 from app.schemas.Users import User_change_password
+from app.schemas.Users import User_response
 
 
 def create_user(new_user: User_base, db: Session):
@@ -53,7 +53,7 @@ def r_update_user(id: int, updated_info: User_response, db: Session):
 def get_current_user(request: Request, db: Session):
 
     token = request.cookies.get("access_token")
-    
+
     return get_current_user_by_token(token=token, db=db)
 
 
@@ -65,9 +65,8 @@ def r_update_email(id: int, updated_email: User_change_email, db: Session):
     return user.first()
 
 
-def r_change_password(change_pass:User_change_password,db:Session,id:int):
-    
+def r_change_password(change_pass: User_change_password, db: Session, id: int):
+
     user = db.query(User).filter(User.id == id)
     user.update(change_pass.dict())
-    db.commit() 
-    
+    db.commit()

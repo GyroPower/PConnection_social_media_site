@@ -10,7 +10,7 @@ def get_posts_with_more_interaction(db: Session):
     post = (
         db.query(Post)
         .join(User, Post.owner_id == User.id)
-        .order_by(Post.create_at.asc())
+        .order_by(Post.create_at.desc())
     )
 
     return post
@@ -30,4 +30,6 @@ def create_post(post, db: Session, user_id: int):
 
 
 def get_posts_own_by_user(db: Session, owner_id):
-    return db.query(Post).filter(Post.owner_id == owner_id)
+    return (
+        db.query(Post).filter(Post.owner_id == owner_id).order_by(Post.create_at.desc())
+    )

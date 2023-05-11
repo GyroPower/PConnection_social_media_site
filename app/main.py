@@ -1,15 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers.base import api_route as api 
+
+from app.routers.base import api_route as api
 from app.web_apps.base import api_router
-#we need RealDictCursor just to give us the name of the columns when we make a sql query
-#without it that just give us the values but not the columns where that belong 
-#this class make what we recived in a python dictionary wit key-value pair
 
-#if we want to give a user feedback of an error we use a http status code
-#to use that in a simple way we use Response class from fastapi package
+# we need RealDictCursor just to give us the name of the columns when we make a sql query
+# without it that just give us the values but not the columns where that belong
+# this class make what we recived in a python dictionary wit key-value pair
 
-#Other way to raise an http status code we can use httpexception, to make it simpler
+# if we want to give a user feedback of an error we use a http status code
+# to use that in a simple way we use Response class from fastapi package
+
+# Other way to raise an http status code we can use httpexception, to make it simpler
 
 """class ModelName(str,Enum):
     alexnet = "alexnet"
@@ -18,34 +20,32 @@ from app.web_apps.base import api_router
 """
 
 
-#models.Base.metadata.create_all(bind=engine)
+# models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI() 
+app = FastAPI()
 
-origins = [
-"https://www.google.com"
-]
+origins = ["https://www.google.com", "http://localhost:8000"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = origins,
-    allow_credentials = True,
-    allow_methods = ["*"],
-    allow_headers = ["*"]
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 app.include_router(api)
 app.include_router(api_router)
 
 
-#this function what makes it's to get a session to our database, and the session
-#object it's responsable to comunicate with our database 
-#every time we send a request we will get a session, and when we make our sql commands we 
-# close the session  
-# every time we make a request to our endpoints we will make a session and then close then 
-# when we finish 
+# this function what makes it's to get a session to our database, and the session
+# object it's responsable to comunicate with our database
+# every time we send a request we will get a session, and when we make our sql commands we
+# close the session
+# every time we make a request to our endpoints we will make a session and then close then
+# when we finish
 
 
-'''while True:
+"""while True:
 
     try:
         conn = psycopg2.connect(dbname='FastAPI',password="16062016JustifyMy",
@@ -57,7 +57,7 @@ app.include_router(api_router)
         print("error")
         print(error)
         time.sleep(2)
-'''
+"""
 
 """@app.get("/main/{model_name}")
 async def root(model_name:ModelName):
@@ -70,8 +70,3 @@ async def root(model_name:ModelName):
 
     return {"Model name" : model_name, "message": "Have some residuals"}
 """
-
-
-
-
-

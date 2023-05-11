@@ -47,10 +47,17 @@
                 </div>
             </div>
 
-            <div>
+            <div class="mb-3">
                 {% if user.id == current_user.id %}
                     <div>
                         <a href="/settings/" class="btn btn-primary">Edit</a>
+                    </div>
+                {% endif %}
+            </div>
+            <div>
+                {% if user.id == current_user.id %}
+                    <div>
+                        <a href="/logout" class="btn btn-danger">Logout</a>
                     </div>
                 {% endif %}
             </div>
@@ -60,7 +67,7 @@
     <div class="row">
       <div class="col-sm-3"></div>
       <div class="col-sm-6 card shadow bg-body rounded ">
-        <a href="/user-info/{{user.id}}">{{user.username}}</a>
+        <a href="/user-info/{{user.id}}">{{post.username}}</a>
       </div>
       <div class="col-sm-3"></div>
     </div>
@@ -77,7 +84,7 @@
       <div class="col-sm-3"></div>
       <div class='col-sm-6 card shadow bg-body rounded text-center mb-3'>
         {% if post.media %}
-          <img src="data:;base64,{{post.media}}"> 
+          <img src="data:;base64,{{post.media}}">
         {% endif %}
         </div>
       <div class="col-sm-3"></div>
