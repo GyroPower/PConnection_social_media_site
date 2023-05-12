@@ -19,6 +19,8 @@ from app.core.oauth2 import get_current_user_by_token
 from app.db.database import get_db
 from app.db.repository.posts.Posts import create_post
 from app.db.repository.posts.Posts import get_posts_with_more_interaction
+from app.db.repository.posts.Posts import r_get_post
+from app.db.repository.users.Users import get_current_user
 from app.db.repository.users.Users import get_user_id
 from app.schemas.Posts import Post_create
 from app.schemas.Users import User_response
@@ -125,3 +127,33 @@ def example(request: Request):
     return templates.TemplateResponse(
         name="votes/boopstrap.html", context={"request": request}
     )
+
+
+@router.get("/edit-post/{id}")
+def edit_post(request: Request, post_id: int, db: Session = Depends(get_db)):
+    post = r_get_post(db, post_id)
+
+    current_user = get_current_user(request, db)
+
+    if current_user.id == post.owner_id:
+        return responses.RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+
+
+@router.get("/test")
+def test(request: Request):
+    return templates.TemplateResponse("votes/test.html", context={"request": request})
+
+
+@router.post("/edit-post/{id}")
+async def edit_post(request: Request, id: int, db: Session = Depends(get_db)):
+    form = post_form(request)
+
+    await form.load_data()
+
+    try:
+        current_user: User_response = get_current_user(request, db)
+
+        post_update = Post_create(form.content, form.media)
+
+    except:
+        pass

@@ -1,0 +1,11 @@
+body {
+    padding: 25px;
+    background-color: white;
+    color: rgb(21, 20, 20);
+    font-size: 25px;
+  }
+
+.dark-mode {
+    background-color: rgb(21, 20, 20);;
+    color: white;
+  }

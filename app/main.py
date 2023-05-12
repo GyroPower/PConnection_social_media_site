@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.routers.base import api_route as api
 from app.web_apps.base import api_router
@@ -35,7 +36,7 @@ app.add_middleware(
 )
 app.include_router(api)
 app.include_router(api_router)
-
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # this function what makes it's to get a session to our database, and the session
 # object it's responsable to comunicate with our database

@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
+from fastapi import UploadFile
 from pydantic import BaseModel
 from pydantic import EmailStr
 
@@ -9,7 +10,7 @@ from .Users import User_response
 
 class Post_Base(BaseModel):
     content: str
-    media: str
+    media: UploadFile
 
 
 class Post_create(Post_Base):
