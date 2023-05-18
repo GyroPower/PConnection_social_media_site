@@ -50,7 +50,7 @@ def r_update_user(id: int, updated_info: User_response, db: Session):
     return user.first()
 
 
-def get_current_user(request: Request, db: Session):
+def r_get_current_user(request: Request, db: Session):
 
     token = request.cookies.get("access_token")
 

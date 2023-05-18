@@ -1,4 +1,5 @@
 import base64
+import os
 
 from fastapi import APIRouter
 from fastapi import Depends
@@ -17,9 +18,9 @@ from app.core.Hashing import verify_password
 from app.db.database import get_db
 from app.db.repository.posts.Posts import get_posts_own_by_user
 from app.db.repository.users.Users import create_user
-from app.db.repository.users.Users import get_current_user
 from app.db.repository.users.Users import get_user_id
 from app.db.repository.users.Users import r_change_password
+from app.db.repository.users.Users import r_get_current_user
 from app.db.repository.users.Users import r_update_email
 from app.db.repository.users.Users import r_update_user
 from app.routers.apis.auth import set_cookie_after_signup
@@ -63,9 +64,9 @@ async def sigup(request: Request, db: Session = Depends(get_db)):
 
             user_created = create_user(user, db)
 
-            """directory = f"{user_created.id}"
-            path = os.path.join(settings_core.dir_media+"media/",directory)
-            os.mkdir(path)"""
+            directory = f"{user_created.id}"
+            path = os.path.join(settings_core.dir_media + "media/", directory)
+            os.mkdir(path)
 
             response = responses.RedirectResponse(
                 "/?msg=Login-Success", status_code=status.HTTP_302_FOUND
@@ -88,18 +89,11 @@ def user_info(request: Request, db: Session = Depends(get_db), id: int = None):
     current_user = None
 
     try:
-        current_user = get_current_user(request, db)
+        current_user = r_get_current_user(request, db)
 
     finally:
         user: User_response = get_user_id(id=id, db=db)
         posts = get_posts_own_by_user(db, id)
-
-        for post in posts:
-
-            post.username = user.username
-            if post.media:
-                media = base64.b64encode(post.media)
-                post.media = media.decode()
 
         for post in posts:
 
@@ -120,7 +114,7 @@ def user_info(request: Request, db: Session = Depends(get_db), id: int = None):
 def settings(request: Request, db: Session = Depends(get_db)):
 
     try:
-        current_user = current_user = get_current_user(request, db)
+        current_user = current_user = r_get_current_user(request, db)
 
         return templates.TemplateResponse(
             "users/edit_user.html",
@@ -137,7 +131,7 @@ async def settings(request: Request, db: Session = Depends(get_db)):
     await form.load_data()
 
     try:
-        current_user: User_response = get_current_user(request, db)
+        current_user: User_response = r_get_current_user(request, db)
 
         if await form.is_valid() == False:
             form.username = current_user.username
@@ -161,7 +155,7 @@ async def settings(request: Request, db: Session = Depends(get_db)):
 def change_email_user(request: Request, db: Session = Depends(get_db)):
 
     try:
-        current_user = get_current_user(request, db)
+        current_user = r_get_current_user(request, db)
 
         return templates.TemplateResponse(
             name="users/change_email.html",
@@ -175,7 +169,7 @@ def change_email_user(request: Request, db: Session = Depends(get_db)):
 async def change_email_user(request: Request, db: Session = Depends(get_db)):
 
     form = change_email(request=request)
-    current_user = get_current_user(request=request, db=db)
+    current_user = r_get_current_user(request=request, db=db)
 
     await form.load_data()
 
@@ -214,7 +208,7 @@ async def change_email_user(request: Request, db: Session = Depends(get_db)):
 def change_password(request: Request, db: Session = Depends(get_db)):
 
     try:
-        current_user = get_current_user(request, db)
+        current_user = r_get_current_user(request, db)
 
         return templates.TemplateResponse(
             "users/change_password.html", {"request": request}
@@ -232,7 +226,7 @@ async def change_password(request: Request, db: Session = Depends(get_db)):
     if await form.is_valid():
 
         try:
-            current_user = get_current_user(request, db)
+            current_user = r_get_current_user(request, db)
 
             if not verify_password(form.current_password, current_user.password):
                 form.__dict__.get("errors").append("Incorrect password")

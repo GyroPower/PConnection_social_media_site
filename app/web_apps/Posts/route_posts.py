@@ -1,4 +1,5 @@
 import base64
+import os
 import shutil
 from typing import Optional
 
@@ -13,18 +14,23 @@ from fastapi import responses
 from fastapi import status
 from fastapi import UploadFile
 from fastapi.templating import Jinja2Templates
+from PIL import Image
 from sqlalchemy.orm import Session
 
+from app.core.config import settings_core
 from app.core.oauth2 import get_current_user_by_token
 from app.db.database import get_db
 from app.db.repository.posts.Posts import create_post
 from app.db.repository.posts.Posts import get_posts_with_more_interaction
 from app.db.repository.posts.Posts import r_get_post
-from app.db.repository.users.Users import get_current_user
+from app.db.repository.posts.Posts import r_update_post
 from app.db.repository.users.Users import get_user_id
+from app.db.repository.users.Users import r_get_current_user
+from app.db.repository.utils import see_image_type
 from app.schemas.Posts import Post_create
 from app.schemas.Users import User_response
 from app.web_apps.Posts.form import post_form
+
 
 router = APIRouter(include_in_schema=False)
 
@@ -50,17 +56,12 @@ def home(request: Request, db: Session = Depends(get_db), msg: str = None):
             user = get_user_id(post.owner_id, db)
             post.username = user.username
 
-            if post.media:
-                image = base64.b64encode(post.media)
-                post.media = image.decode()
-
         return templates.TemplateResponse(
             name="main/home_page.html",
             context={
                 "request": request,
                 "posts": posts.all(),
                 "current_user": current_user,
-                "image": image,
             },
         )
 
@@ -90,7 +91,6 @@ async def create(request: Request, db: Session = Depends(get_db)):
     await form.load_data()
 
     try:
-
         current_user: User_response = get_current_user_by_token(token=token, db=db)
 
         if not await form.validate_data():
@@ -103,10 +103,30 @@ async def create(request: Request, db: Session = Depends(get_db)):
             )
 
         media = None
+        media_dir = None
+        media_dir_save = None
         if form.__dict__.get("media"):
-            media = await form.__dict__.get("media").read()
+            media_type = str(form.__dict__.get("media").filename)
 
-        post_create = {"content": form.__dict__.get("content"), "media_dir": media}
+            media_type = media_type.replace(" ", "-")
+
+            media_dir_save = settings_core.dir_media + f"{current_user.id}"
+
+            if not os.path.exists(media_dir_save):
+                os.mkdir(media_dir_save)
+
+            media_dir_save = media_dir_save + f"/{media_type}"
+
+            media_dir = f"{current_user.id}" + f"/{media_type}"
+
+            media = form.__dict__.get("media")
+
+        post_create = {
+            "content": form.__dict__.get("content"),
+            "media_dir": media_dir,
+            "media_dir_save": media_dir_save,
+            "media": media,
+        }
         create_post(post_create, db=db, user_id=current_user.id)
 
         return responses.RedirectResponse("/", status_code=status.HTTP_302_FOUND)
@@ -129,19 +149,18 @@ def example(request: Request):
     )
 
 
-@router.get("/edit-post/{id}")
+@router.get("/edit-post/{post_id}")
 def edit_post(request: Request, post_id: int, db: Session = Depends(get_db)):
     post = r_get_post(db, post_id)
 
-    current_user = get_current_user(request, db)
+    current_user = r_get_current_user(request, db)
 
-    if current_user.id == post.owner_id:
+    if current_user.id != post.owner_id:
         return responses.RedirectResponse("/", status_code=status.HTTP_302_FOUND)
 
-
-@router.get("/test")
-def test(request: Request):
-    return templates.TemplateResponse("votes/test.html", context={"request": request})
+    return templates.TemplateResponse(
+        "posts/edit_post.html", context={"request": request, "post": post}
+    )
 
 
 @router.post("/edit-post/{id}")
@@ -149,11 +168,40 @@ async def edit_post(request: Request, id: int, db: Session = Depends(get_db)):
     form = post_form(request)
 
     await form.load_data()
+    post = r_get_post(db, id)
 
-    try:
-        current_user: User_response = get_current_user(request, db)
+    if await form.validate_data():
+        current_user: User_response = r_get_current_user(request, db)
+        media = None
+        media_dir = None
+        media_dir_save = None
 
-        post_update = Post_create(form.content, form.media)
+        if form.__dict__.get("media").filename != "":
+            media_type = str(form.__dict__.get("media").filename)
 
-    except:
-        pass
+            media_type = media_type.replace(" ", "-")
+
+            media_dir_save = settings_core.dir_media + f"{current_user.id}"
+
+            if not os.path.exists(media_dir_save):
+                os.mkdir(media_dir_save)
+
+            media_dir_save = media_dir_save + f"/{media_type}"
+
+            media_dir = f"{current_user.id}" + f"/{media_type}"
+
+            media = form.__dict__.get("media")
+
+        post_update = {
+            "content": form.content,
+            "media": media,
+            "media_dir": media_dir,
+            "media_dir_save": media_dir_save,
+            "media": media,
+        }
+        r_update_post(post_update, db, current_user.id, id)
+
+        return responses.RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+    else:
+        form.__dict__.update({"post": post})
+        return templates.TemplateResponse("posts/edit_post.html", form.__dict__)

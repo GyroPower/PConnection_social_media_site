@@ -8,6 +8,9 @@
           <div class="card shadow">
             <div class="card-body">
               <div class="row">
+                <div id="result" class="text-danger text-bold lead"></div>
+              </div>
+              <div class="row">
                 <div class="col">
                   <a href="/user-info/{{post.owner_id}}">{{post.username}}</a>
                 </div>
@@ -17,8 +20,8 @@
                   <ul class="dropdown-menu dropdown-menu-dark text-center" style="width: 10rem;" sty aria-labelledby="navbarDropdown">
                     <li><a class="dropdown-item " href="#">Save</a></li>
                     {% if current_user.id == post.owner_id%}
-                      <li><a class="dropdown-item " href="#">Edit</a></li>
-                      <li><a class="dropdown-item " href="#">Delete</a></li>
+                      <li><a class="dropdown-item " href="/edit-post/{{post.id}}">Edit</a></li>
+                      <li><button type="button" class="dropdown-item " onclick="delete_post({{post.id}})">Delete</button></li>
                     {% endif %}
                   </ul>
                 </div>
@@ -36,10 +39,10 @@
               </div>
             </div>
 
-            {% if post.media%}
+            {% if post.media_dir %}
               <div class="card">
                 <div class="col mb-1">
-                  <img class="card-img" src="data:;base64,{{post.media}}">
+                  <img class="card-img" src="{{url_for("media",path=post.media_dir)}}">
                 </div>
               </div>
             {% endif%}
@@ -65,4 +68,5 @@
         </div>
         <div class="col-sm-3"></div>
       </div>
+      <script src="{{url_for("static",path="js/delete_post.js")}}"></script>
 </div>

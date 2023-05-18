@@ -1,3 +1,4 @@
+import os
 from typing import List
 from typing import Optional
 
@@ -5,6 +6,7 @@ from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import FastAPI
 from fastapi import HTTPException
+from fastapi import Request
 from fastapi import Response
 from fastapi import status
 from sqlalchemy.orm import Session
@@ -12,10 +14,31 @@ from sqlalchemy.orm import Session
 from ...db.database import get_db
 from app.core.oauth2 import get_current_user
 from app.db.models.post import Post
+from app.db.repository.posts.Posts import r_get_post
+from app.db.repository.users.Users import r_get_current_user
 from app.schemas.Posts import Post_create
 from app.schemas.Posts import Post_response
 
 router = APIRouter(prefix="/posts", tags=["posts"])
+
+
+@router.put("/{id}")
+def change_media(request: Request, id: int, db: Session = Depends(get_db)):
+    current_user = r_get_current_user(request, db)
+
+    post_query = db.query(Post).filter(Post.id == id, Post.owner_id == current_user.id)
+    post = post_query.first()
+
+    print(post.media_dir)
+    if post.media_dir != None:
+        os.remove(post.media_dir)
+
+    post_query.update(
+        {Post.content: post.content, Post.media_dir: None}, synchronize_session=False
+    )
+    db.commit()
+
+    return post_query.first()
 
 
 @router.get("/own", response_model=List[Post_response])
@@ -127,7 +150,7 @@ def delete(
 
             post_query.delete(synchronize_session=False)
             db.commit()
-            return Response(status_code=status.HTTP_204_NO_CONTENT)
+            return {"detail": "deleted"}
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Unauthorized action, this post don't belong to user with id:{current_user.id}",
@@ -138,6 +161,7 @@ def delete(
     )
 
 
+'''
 @router.put("/{id}", status_code=status.HTTP_201_CREATED, response_model=Post_response)
 def update(
     id: int,
@@ -169,3 +193,4 @@ def update(
     db.commit()
 
     return post_query.first()
+'''

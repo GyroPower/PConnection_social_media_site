@@ -17,7 +17,7 @@ class Post(Base):
 
     id = Column(Integer, primary_key=True, nullable=False)
     content = Column(String, nullable=False, default="")
-    media = Column(LargeBinary, nullable=True)
+    media_dir = Column(String, nullable=True)
     published = Column(Boolean, server_default="TRUE", nullable=False)
     create_at = Column(
         TIMESTAMP(timezone=True), nullable=False, server_default=text("NOW()")

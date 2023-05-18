@@ -1,3 +1,5 @@
+import os
+
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import FastAPI
@@ -13,8 +15,8 @@ from app.db import database
 from app.db.models.post import Post
 from app.db.models.users import User
 from app.db.models.vote import Votes
-from app.db.repository.users.Users import get_current_user
 from app.db.repository.users.Users import get_current_user_by_token
+from app.db.repository.users.Users import r_get_current_user
 from app.schemas.Users import User_response
 from app.schemas.Votes import Vote
 
@@ -33,7 +35,7 @@ async def do_vote(
 
     try:
 
-        current_user = get_current_user(request, db)
+        current_user = r_get_current_user(request, db)
 
         post = db.query(Post).filter(Post.id == id)
 
@@ -72,3 +74,53 @@ async def do_vote(
 
     except HTTPException:
         return responses.RedirectResponse("/login/", status_code=status.HTTP_302_FOUND)
+
+
+@router.delete("/{id}")
+def delete(
+    request: Request,
+    id: int,
+    db: Session = Depends(database.get_db),
+):
+
+    # cursor.execute("""DELETE FROM posts where id = %s""",(str(id)))
+
+    # post = cursor.rowcount
+    current_user = r_get_current_user(request, db)
+
+    post_query = db.query(Post).filter(Post.id == id)
+    post = post_query.first()
+
+    if post is not None:
+        if post.owner_id == current_user.id:
+
+            post_query.delete(synchronize_session=False)
+            db.commit()
+            return {"detail": "deleted"}
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Unauthorized action, this post don't belong to user with id:{current_user.id}",
+        )
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id: {id} not found"
+    )
+
+
+@router.put("/{id}")
+def change_media(request: Request, id: int, db: Session = Depends(database.get_db)):
+    current_user = r_get_current_user(request, db)
+
+    post_query = db.query(Post).filter(Post.id == id, Post.owner_id == current_user.id)
+    post = post_query.first()
+
+    print(post.media_dir)
+    if post.media_dir != None:
+        os.remove("media/" + post.media_dir)
+
+    post_query.update(
+        {Post.content: post.content, Post.media_dir: None}, synchronize_session=False
+    )
+    db.commit()
+
+    return post_query.first()

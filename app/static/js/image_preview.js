@@ -17,10 +17,10 @@ function updateImageDisplay() {
         const para = document.createElement('p');
 
 
-          const image = document.createElement('img');
-          image.src = URL.createObjectURL(file);
-          image.classList.add("card-img")
-          preview.appendChild(image);
+        const image = document.createElement('img');
+        image.src = URL.createObjectURL(file);
+        image.classList.add("card-img")
+        preview.appendChild(image);
 
 
 
