@@ -1,5 +1,6 @@
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-outline-primary text-light btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">
+<script src="{{url_for("static",path="js/get_comments.js")}}"></script>
+<button type="button" class="btn btn-outline-primary text-light btn-sm" onclick="get_comments_for_post({{post.id}})" data-bs-toggle="modal" data-bs-target="#exampleModal">
     comment
   </button>
 

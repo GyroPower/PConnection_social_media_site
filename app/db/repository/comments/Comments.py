@@ -13,3 +13,14 @@ def comment_post(comment, post_id: int, user_id: int, db: Session):
     db.commit()
     db.refresh(new_comment)
     return new_comment
+
+
+def get_comments_for_a_post(post_id: int, db: Session):
+
+    comments = (
+        db.query(Comments)
+        .filter(Comments.post_owner_id == post_id)
+        .order_by(Comments.create_at.desc())
+    )
+
+    return comments.all()
