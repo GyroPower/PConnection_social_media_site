@@ -1,18 +1,18 @@
 <script src="{{url_for("static",path="js/like.js")}}"></script>
 
-<div class="container">
+<div class="container text-white bg-dark" id="{{post.id}}">
 
-     <div class="row mb-3" >
+     <div class="row mb-3 " >
         <div class="col-sm-3"></div>
         <div class="col-sm-6">
-          <div class="card shadow">
+          <div class="card shadow bg-dark">
             <div class="card-body">
               <div class="row">
                 <div id="result" class="text-danger text-bold lead"></div>
               </div>
               <div class="row">
                 <div class="col">
-                  <a href="/user-info/{{post.owner_id}}">{{post.username}}</a>
+                  <a class="text-white" href="/user-info/{{post.owner_id}}">{{user.username}}</a>
                 </div>
                 <div class="col text-right vav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -27,36 +27,43 @@
                 </div>
               </div>
             </div>
-            <div class="card">
-              <div class="card-body">
-                <div class="row">
-                  <div class="col mb-3">
-                    <p class="card-text">
-                      {{post.content}}
-                    </p>
+
+            {% if post.content != ""%}
+              <div class="card bg-dark">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col mb-3">
+                      <p class="card-text">
+                        {{post.content}}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            {% endif %}
 
             {% if post.media_dir %}
-              <div class="card">
+              <div class="card bg-dark">
                 <div class="col mb-1">
                   <img class="card-img" src="{{url_for("media",path=post.media_dir)}}">
                 </div>
               </div>
             {% endif%}
-              <div class="card">
+              <div class="card bg-dark">
                 <div class="card-body">
                   <div class="row">
-                    <div class="col">
-                      <p class="card-text text-center" id="{{post.id}}">{{post.votes}}</p>
+                    <div class="col-sm-2 text-center">
+                      <p class="card-text text-center btn btn-outline-dark text-light btn-sm" id="like">{{post.votes}}</p>
                     </div>
-                    <div class="col text-center">
-                      <button class="btn btn-outline-primary"  onclick="like({{post.id}})">like</button>
+                    <div class="col-sm-2 text-center">
+                      <button type="button" class="btn btn-outline-primary text-light btn-sm"  onclick="like({{post.id}})">like</button>
                     </div>
-                    <div class="col text-right">
-                      <button class="btn btn-outline-primary">Share</button>
+                    <div class="col-sm-4 text-center">
+                      {% include "components/modal.html"%}
+                    </div>
+
+                    <div class="col-sm-2 text-right">
+                      <button type="button" class="btn btn-outline-primary text-light btn-sm">Share</button>
                     </div>
                   </div>
                 </div>

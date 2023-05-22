@@ -5,42 +5,42 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row my-3 ">
-        <div class="col-sm-3 mb-3 card shadow bg-body rounded">
-            <h3 class="text-center">User info</h3>
+<div class="container bg-dark text-light">
+    <div class="row my-3 bg-dark text-light">
+        <div class="col-sm-3 mb-3 card shadow rounded bg-dark text-light">
+            <h3 class="text-center bg-dark text-light">User info</h3>
         </div>
         <div class="col-sm-3 mb-3">
             <a href="/" class="btn btn-primary">Home</a>
         </div>
     </div>
 
-    <div class="card shadow p-3 mb-2 bg-body rounded">
+    <div class="card shadow p-3 mb-2  bg-dark  rounded">
 
-        <div class="card-body">
+        <div class="card-body  bg-dark">
 
-            <div class="row">
-                <div class="col-sm-3 text-center card shadow bg-body rounded mb-3">
-                   <pre>Username:</pre>
+            <div class="row bg-dark ">
+                <div class="col-sm-3 text-center text-light card shadow rounded mb-3 bg-dark">
+                   <pre class="text-light">Username:</pre>
                 </div>
                 <div class="col-sm-9 mb-3">
                     {{user.username}}
                 </div>
             </div>
 
-            <div class='row'>
-                <div class="col-sm-3 text-center card shadow bg-body rounded mb-3">
-                    <pre>description:</pre>
+            <div class='row bg-dark text-light'>
+                <div class="col-sm-3 text-center card shadow  rounded mb-3 bg-dark text-light">
+                    <pre class="text-light">description:</pre>
                 </div>
-                <div class="col-sm-9 mb-3">
+                <div class="col-sm-9 mb-3 bg-dark text-light">
                     {{user.description}}
                 </div>
 
             </div>
 
             <div class='row'>
-                <div class="col-sm-3 mb-3 text-center card shadow bg-body rounded mb-3">
-                    <pre>email:</pre>
+                <div class="col-sm-3 mb-3 text-center card shadow rounded mb-3 bg-dark text-light">
+                    <pre class="text-light">email:</pre>
                 </div>
                 <div class="col-sm-9 mb-3">
                     {{user.email}}

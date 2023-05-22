@@ -1,0 +1,19 @@
+<script src="{{url_for("static",path="js/sending_comments.js")}}"></script>
+<form method="POST" id="form">
+    <div class="mb-3">
+        <textarea class="form-control bg-dark text-light" name="content" id="comment" cols="30" rows="5"></textarea>
+    </div>
+    <div class="mb-3 text-left">
+        <button type="submit" class="btn btn-light" onclick="post_a_comment({{post.id}})">Comment</button>
+    </div>
+</form>
+
+<div class="mb-3">
+    <div class="card shadow bg-dark rounded">
+        <div class="card-body text-left" id="content_comment">
+
+        </div>
+
+    </div>
+
+</div>

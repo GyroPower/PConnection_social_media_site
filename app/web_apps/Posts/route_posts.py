@@ -51,10 +51,6 @@ def home(request: Request, db: Session = Depends(get_db), msg: str = None):
             user: User_response = current_user
 
     finally:
-        users = []
-        for post in posts:
-            user = get_user_id(post.owner_id, db)
-            post.username = user.username
 
         return templates.TemplateResponse(
             name="main/home_page.html",
@@ -105,7 +101,7 @@ async def create(request: Request, db: Session = Depends(get_db)):
         media = None
         media_dir = None
         media_dir_save = None
-        if form.__dict__.get("media"):
+        if form.__dict__.get("media").filename != "":
             media_type = str(form.__dict__.get("media").filename)
 
             media_type = media_type.replace(" ", "-")
@@ -127,6 +123,7 @@ async def create(request: Request, db: Session = Depends(get_db)):
             "media_dir_save": media_dir_save,
             "media": media,
         }
+
         create_post(post_create, db=db, user_id=current_user.id)
 
         return responses.RedirectResponse("/", status_code=status.HTTP_302_FOUND)

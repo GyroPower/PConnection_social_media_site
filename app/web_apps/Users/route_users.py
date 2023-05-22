@@ -65,7 +65,7 @@ async def sigup(request: Request, db: Session = Depends(get_db)):
             user_created = create_user(user, db)
 
             directory = f"{user_created.id}"
-            path = os.path.join(settings_core.dir_media + "media/", directory)
+            path = os.path.join(settings_core.dir_media, directory)
             os.mkdir(path)
 
             response = responses.RedirectResponse(
@@ -97,7 +97,7 @@ def user_info(request: Request, db: Session = Depends(get_db), id: int = None):
 
         for post in posts:
 
-            post.__dict__.update({"username": user.username})
+            post.username = user.username
 
         return templates.TemplateResponse(
             name="users/user_info.html",

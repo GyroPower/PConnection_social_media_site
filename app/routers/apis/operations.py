@@ -15,13 +15,14 @@ from app.db import database
 from app.db.models.post import Post
 from app.db.models.users import User
 from app.db.models.vote import Votes
+from app.db.repository.comments.Comments import comment_post
 from app.db.repository.users.Users import get_current_user_by_token
 from app.db.repository.users.Users import r_get_current_user
 from app.schemas.Users import User_response
 from app.schemas.Votes import Vote
+from app.web_apps.comments.form import form_comment
 
-
-router = APIRouter(prefix="/votes", tags=["votes"])
+router = APIRouter(prefix="/operations", tags=["votes"])
 
 
 @router.post("/{id}")
@@ -124,3 +125,28 @@ def change_media(request: Request, id: int, db: Session = Depends(database.get_d
     db.commit()
 
     return post_query.first()
+
+
+@router.post("/comment/{id}")
+async def post_a_comment(
+    request: Request, id: int, db: Session = Depends(database.get_db)
+):
+    current_user = r_get_current_user(request, db)
+
+    form = form_comment(request)
+
+    await form.load_data()
+
+    if await form.validate_data():
+
+        comment = {"content": form.__dict__.get("content")}
+
+        new_comment = comment_post(comment, id, current_user.id, db)
+
+        return {
+            "data": new_comment.content,
+            "user_id": current_user.id,
+            "username": current_user.username,
+        }
+
+    return {"errors": form.__dict__.get("errors")}

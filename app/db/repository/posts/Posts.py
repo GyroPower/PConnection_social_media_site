@@ -4,6 +4,7 @@ import pickle
 from PIL import Image
 from sqlalchemy.orm import Session
 
+from app.db.models.comments import Comments
 from app.db.models.post import Post
 from app.db.models.users import User
 from app.schemas.Posts import Post_Base
@@ -12,8 +13,8 @@ from app.schemas.Posts import Post_Base
 def get_posts_with_more_interaction(db: Session):
 
     post = (
-        db.query(Post)
-        .join(User, Post.owner_id == User.id)
+        db.query(Post, User)
+        .join(User, User.id == Post.owner_id, isouter=True, full=True)
         .order_by(Post.create_at.desc())
     )
 
@@ -79,3 +80,8 @@ def r_update_post(post, db: Session, user_id: int, post_id: int):
 
     db.commit()
     return post_query.first()
+
+
+def post_a_comment_in_db(current_user, db, comment, post_id):
+
+    pass

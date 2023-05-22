@@ -1,6 +1,6 @@
 function clearInputFile(id){
 
-    fetch("/votes/"+id,{
+    fetch("/operations/"+id,{
         method:"PUT"
     ,})
     .then(response => response.json())

@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
 from app.routers.apis.auth import router as auth
+from app.routers.apis.operations import router as votes
 from app.routers.apis.posts import router as posts
 from app.routers.apis.users import router as users
-from app.routers.apis.votes import router as votes
 
 api_route = APIRouter()
 #
