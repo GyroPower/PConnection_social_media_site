@@ -1,5 +1,6 @@
 import os
 import pickle
+from inspect import isroutine
 
 from PIL import Image
 from sqlalchemy.orm import Session
@@ -82,6 +83,20 @@ def r_update_post(post, db: Session, user_id: int, post_id: int):
     return post_query.first()
 
 
-def post_a_comment_in_db(current_user, db, comment, post_id):
+def r_get_posts_query(db: Session, query: str):
 
-    pass
+    result = (
+        db.query(Post, User)
+        .join(User, User.id == Post.owner_id, isouter=True)
+        .filter(Post.content.contains(query))
+        .all()
+    )
+
+    result2 = (
+        db.query(Post, User)
+        .join(User, User.id == Post.owner_id, isouter=True)
+        .filter(User.username.contains(query))
+        .all()
+    )
+
+    return result + result2

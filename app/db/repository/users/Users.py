@@ -70,3 +70,8 @@ def r_change_password(change_pass: User_change_password, db: Session, id: int):
     user = db.query(User).filter(User.id == id)
     user.update(change_pass.dict())
     db.commit()
+
+
+def r_get_users_query(db: Session, query: str):
+
+    return db.query(User).filter(User.username.contains(query)).all()

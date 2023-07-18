@@ -17,6 +17,8 @@ from app.db.models.users import User
 from app.db.models.vote import Votes
 from app.db.repository.comments.Comments import comment_post
 from app.db.repository.comments.Comments import get_comments_for_a_post
+from app.db.repository.comments.Comments import r_delete_comment
+from app.db.repository.comments.Comments import r_update_comment
 from app.db.repository.users.Users import get_user_id
 from app.db.repository.users.Users import r_get_current_user
 from app.schemas.Users import User_response
@@ -147,6 +149,7 @@ async def post_a_comment(
             "data": new_comment.content,
             "user_id": current_user.id,
             "username": current_user.username,
+            "id": new_comment.id,
         }
 
     return {"errors": form.__dict__.get("errors")}
@@ -172,3 +175,36 @@ def get_comments(request: Request, post_id, db: Session = Depends(database.get_d
         )
 
     return {"comments": comments_list}
+
+
+@router.delete("/comments/{comment_id}")
+def delete_comment(
+    request: Request, comment_id: int, db: Session = Depends(database.get_db)
+):
+
+    current_user = r_get_current_user(request, db)
+
+    r_delete_comment(current_user.id, comment_id, db)
+
+    return {"detail": "deleted"}
+
+
+@router.put("/comments/{comment_id}")
+async def update_comment(
+    request: Request, comment_id: int, db: Session = Depends(database.get_db)
+):
+
+    current_user = r_get_current_user(request, db)
+
+    form = form_comment(request)
+
+    await form.load_data()
+
+    if await form.validate_data():
+        comment = r_update_comment(
+            current_user.id, comment_id, form.__dict__.get("content"), db
+        )
+
+        return {"data": "updated", "content": comment.content}
+
+    return {"data": form.__dict__.get("errors")}

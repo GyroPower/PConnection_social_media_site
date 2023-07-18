@@ -24,3 +24,23 @@ def get_comments_for_a_post(post_id: int, db: Session):
     )
 
     return comments.all()
+
+
+def r_delete_comment(user_id: int, comments_id: int, db: Session):
+
+    comments = db.query(Comments).filter(
+        Comments.id == comments_id, Comments.owner_id == user_id
+    )
+    comments.delete(synchronize_session=False)
+    db.commit()
+
+
+def r_update_comment(user_id: int, comment_id: int, comment_info, db: Session):
+
+    comment = db.query(Comments).filter(
+        Comments.id == comment_id, Comments.owner_id == user_id
+    )
+
+    comment.update({Comments.content: comment_info}, synchronize_session=False)
+    db.commit()
+    return comment.first()

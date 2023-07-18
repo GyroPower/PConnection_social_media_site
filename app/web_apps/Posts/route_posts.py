@@ -23,9 +23,11 @@ from app.db.database import get_db
 from app.db.repository.posts.Posts import create_post
 from app.db.repository.posts.Posts import get_posts_with_more_interaction
 from app.db.repository.posts.Posts import r_get_post
+from app.db.repository.posts.Posts import r_get_posts_query
 from app.db.repository.posts.Posts import r_update_post
 from app.db.repository.users.Users import get_user_id
 from app.db.repository.users.Users import r_get_current_user
+from app.db.repository.users.Users import r_get_users_query
 from app.db.repository.utils import see_image_type
 from app.schemas.Posts import Post_create
 from app.schemas.Users import User_response
@@ -202,3 +204,28 @@ async def edit_post(request: Request, id: int, db: Session = Depends(get_db)):
     else:
         form.__dict__.update({"post": post})
         return templates.TemplateResponse("posts/edit_post.html", form.__dict__)
+
+
+@router.get("/search/")
+def search(request: Request, query: str, db: Session = Depends(get_db)):
+
+    posts_users = r_get_posts_query(db, query)
+    users = r_get_users_query(db, query)
+
+    current_user = None
+
+    try:
+
+        current_user = r_get_current_user(request, db)
+
+    finally:
+
+        return templates.TemplateResponse(
+            "main/search_user_post.html",
+            {
+                "request": request,
+                "users": users,
+                "posts_users": posts_users,
+                "current_user": current_user,
+            },
+        )
